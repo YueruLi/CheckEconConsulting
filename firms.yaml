@@ -1,0 +1,86 @@
+# Which firms and pages to track.
+#
+# Source types:
+#   greenhouse  - board: Greenhouse board token (job-boards.greenhouse.io/<board>)
+#   lever       - company: Lever company slug (jobs.lever.co/<company>)
+#   icims       - host: iCIMS portal host (e.g. xyz.icims.com)
+#   workday     - url: Workday career site URL; optional search: text to search for
+#   events      - url: an event-calendar page; every dated entry becomes an item, labelled with
+#                 the heading (usually the school) above it. `section` (regex, default "event")
+#                 picks the heading where the calendar starts.
+#   page        - url: any web page; every link whose text matches `include` becomes an item.
+#                 Use this for recruiting-event calendars or firms without a supported job board.
+#
+# Every source can override `include` / `exclude` (case-insensitive regexes applied to the
+# title) and add `require` (a regex the title must also match). `kind` is "job" or "event".
+
+defaults:
+  # Roles that MBA candidates are hired into at econ consulting firms.
+  include: '\bMBA\b|associate|consultant'
+  # Undergrad, senior, and non-consulting roles.
+  exclude: >-
+    research associate|analyst|assistant|coordinator|administrat|principal|director|
+    vice president|\bVP\b|manager|recruit|human resources|\bHR\b|payroll|
+    paralegal|librarian|help ?desk|engineer|developer|designer|
+    \bIT\b|facilities|receptionist|office services|counsel\b|legal assistant
+  event_include: >-
+    event|webinar|info(rmation)? session|coffee chat|workshop|networking|panel|
+    open house|meet (the|our)|register|engagement series|\bMBA\b|associate|deadline
+
+firms:
+  - name: Analysis Group
+    sources:
+      - type: icims
+        host: associatecareers-analysisgroup.icims.com
+      - type: events
+        kind: event
+        url: https://www.analysisgroup.com/careers/career-path/recruiting-events/
+      - type: page
+        kind: event
+        url: https://www.analysisgroup.com/careers/career-path/recruiting-events/associate-engagement-series/
+
+  - name: Cornerstone Research
+    sources:
+      - type: icims
+        host: grad-chire.icims.com
+        require: '\bMBA\b|associate'
+      # Associate recruiting events (by school) are posted on the Associate page.
+      - type: events
+        kind: event
+        url: https://www.cornerstone.com/careers/associate/
+        include: '.'
+
+  - name: The Brattle Group
+    sources:
+      - type: greenhouse
+        board: thebrattlegroup
+
+  - name: Charles River Associates
+    sources:
+      - type: greenhouse
+        board: charlesriverassociates
+      # CRA's MBA board is unlisted. The API usually returns nothing for it, which is fine.
+      - type: greenhouse
+        board: mbarecruitingcra
+
+  - name: Keystone Strategy
+    sources:
+      - type: greenhouse
+        board: keystonestrategy
+
+  - name: NERA Economic Consulting
+    sources:
+      - type: workday
+        url: https://mmc.wd1.myworkdayjobs.com/en-US/MMC
+        search: NERA
+        require: 'NERA'
+
+  - name: Bates White
+    sources:
+      - type: page
+        url: https://www.bateswhite.com/careers/current-openings
+
+  - name: Compass Lexecon
+    sources:
+      - type: page
+        url: https://www.compasslexecon.com/careers

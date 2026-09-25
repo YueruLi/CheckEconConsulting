@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Econ Consulting MBA Openings</title>
+<link rel="alternate" type="application/rss+xml" title="RSS" href="feed.xml">
+<style>
+:root {
+  --bg: #f7f7f5; --card: #ffffff; --text: #1d1d1b; --muted: #6b6b66; --line: #e4e3de;
+  --accent: #1f5fbf; --new: #1b7f3b; --mba: #7a4bb5; --event: #b5651d; --warn: #a33;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141413; --card: #1d1d1b; --text: #ecebe6; --muted: #9c9b95; --line: #33332f;
+    --accent: #7eaaf0; --new: #5cc27b; --mba: #b893e6; --event: #e0a15f; --warn: #f08a8a;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 24px 16px 48px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+.lede { color: var(--muted); margin: 0 0 16px; }
+.lede a { color: var(--accent); }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.controls input, .controls select { font: inherit; padding: 6px 10px; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--card); color: var(--text); }
+.controls input[type=search] { flex: 1 1 200px; }
+.controls label { display: flex; align-items: center; gap: 4px; color: var(--muted); }
+ul.list { list-style: none; margin: 0; padding: 0; background: var(--card);
+  border: 1px solid var(--line); border-radius: 8px; }
+.item { padding: 10px 14px; border-top: 1px solid var(--line); }
+.item:first-child { border-top: 0; }
+.main a { color: var(--text); font-weight: 600; text-decoration: none; }
+.main a:hover { color: var(--accent); text-decoration: underline; }
+.sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.firm { color: var(--text); }
+.seen { float: right; }
+.badge { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .03em;
+  margin-left: 8px; padding: 1px 6px; border-radius: 4px; border: 1px solid currentColor; }
+.new { color: var(--new); } .mba { color: var(--mba); } .event { color: var(--event); }
+.empty { padding: 20px; color: var(--muted); text-align: center; }
+.problems { margin: 0 0 12px; color: var(--warn); font-size: 13px; }
+@media (max-width: 520px) { .seen { float: none; display: block; } }
+</style>
+</head>
+<body>
+<main>
+<h1>Econ Consulting MBA Openings</h1>
+<p class="lede">0 open roles and events, 0 new this week. Updated never. <a href="feed.xml">RSS</a></p>
+
+<div class="controls">
+  <input type="search" id="q" placeholder="Filter by title or location">
+  <select id="firm"><option value="">All firms</option></select>
+  <select id="kind"><option value="">Jobs &amp; events</option><option value="job">Jobs</option><option value="event">Events</option></select>
+  <label><input type="checkbox" id="onlynew"> New only</label>
+</div>
+<ul class="list" id="list">
+<li class="empty">Nothing yet. Run a refresh.</li>
+</ul>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+function apply() {
+  const q = $("q").value.toLowerCase(), firm = $("firm").value, kind = $("kind").value, onlyNew = $("onlynew").checked;
+  for (const li of document.querySelectorAll(".item")) {
+    const ok = (!q || li.textContent.toLowerCase().includes(q)) && (!firm || li.dataset.firm === firm)
+      && (!kind || li.dataset.kind === kind) && (!onlyNew || li.dataset.new === "1");
+    li.hidden = !ok;
+  }
+}
+for (const id of ["q", "firm", "kind", "onlynew"]) $(id).addEventListener("input", apply);
+</script>
+</body>
+</html>
