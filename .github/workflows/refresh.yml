@@ -1,13 +1,25 @@
 name: Refresh listings
 
+# Fetches openings and events, saves data/state.json, and publishes docs/ to GitHub Pages.
+# Needs Settings -> Pages -> Source set to "GitHub Actions".
+
 on:
   schedule:
     - cron: "17 */6 * * *"  # every 6 hours
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "econjobs/**"
+      - "firms.yaml"
+      - "requirements.txt"
+      - ".github/workflows/refresh.yml"
 
 permissions:
-  contents: write
-  issues: write
+  contents: write  # commit data/state.json
+  issues: write    # announce new postings
+  pages: write
+  id-token: write
 
 concurrency:
   group: refresh
@@ -16,6 +28,9 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -32,17 +47,28 @@ jobs:
           --site-url "https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/"
           --new-summary new.md
 
-      - name: Commit updated data and site
+      - name: Save state
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data docs
-          git diff --cached --quiet || git commit -m "Refresh listings"
-          git push
+          git add data
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh listings"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push origin "HEAD:${{ github.ref_name }}"
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
 
       - name: Open an issue for new postings
         if: hashFiles('new.md') != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh issue create --title "New econ consulting postings — $(date -u +%Y-%m-%d)" --body-file new.md
-

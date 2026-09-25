@@ -28,11 +28,13 @@ adds an event, it shows up as new.
 
 ## Setup (once)
 
-1. Merge this branch into the default branch. Scheduled workflows only run from there.
-2. **Settings → Pages**: deploy from branch, choose the default branch and `/docs`.
-3. **Actions → Refresh listings → Run workflow** to do the first fetch.
+1. **Settings → Pages → Build and deployment → Source: "GitHub Actions"**.
+2. Merge to `main`, or run **Actions → Refresh listings → Run workflow**.
 
-The dashboard is then at `https://<user>.github.io/<repo>/`, with the feed at `…/feed.xml`.
+The workflow runs every 6 hours, and again whenever the code or `firms.yaml` changes on `main`.
+Each run fetches every source, commits `data/state.json` (the memory of what has been seen),
+and deploys the dashboard to `https://<user>.github.io/<repo>/`. The RSS feed is at `…/feed.xml`
+and the raw data at `…/jobs.json`.
 
 The first run records everything as a baseline without opening an issue. After that, each run
 that finds something new opens an issue listing it. GitHub emails you about new issues on your
@@ -42,7 +44,7 @@ own repo, so that doubles as an email alert.
 
 ```sh
 pip install -r requirements.txt
-python -m econjobs          # fetch everything, update data/state.json, rebuild docs/
+python -m econjobs          # fetch everything, update data/state.json, build docs/ (not committed)
 open docs/index.html
 pytest -q
 ```
